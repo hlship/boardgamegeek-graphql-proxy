@@ -1,0 +1,21 @@
+{:objects {
+           :BoardGame {:description "Details about a Board Game including description, number of players, creators, and publishes."
+                       :fields {:id {:type ID}
+                                :name {:type String}
+                                :publish_year {:type Int}
+                                :min_players {:type Int}
+                                :max_players {:type Int}
+                                :playing_time {:type Int}
+                                :args {:type Int}
+                                :description {:type String
+                                              :description "Short text description of the game."}
+                                :thumbnail {:type String
+                                            :description "URL for a small image representing the game, used in various lists."}
+                                :image {:type String
+                                        :description "URL for a larger image for the game."}}}
+           }
+
+ :queries {
+           :game {:type BoardGame
+                  :args {:id {:type ID
+                              :description "Unique identifier for the game."}}}}}
