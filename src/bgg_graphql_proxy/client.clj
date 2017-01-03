@@ -2,7 +2,8 @@
   "Client code for accessing BoardGameGeek, and converting XML responses into Clojure data."
   (:require
     [clj-http.client :as client]
-    [clojure.data.xml :as xml])
+    [clojure.data.xml :as xml]
+    [clojure.string :as str])
   (:import (java.io StringReader)))
 
 (def ^:private base-url "https://www.boardgamegeek.com/xmlapi")
@@ -77,8 +78,13 @@
 (defn search
   "Performs a search of matching games by name."
   [text]
-  (->> (get-xml (str base-url "/search") {:search text})
-       (expect-tag :boardgames)
-       :content
-       ;; This only yields :name and :year-published
-       (map xml->board-game)))
+  (let [game-ids (->> (get-xml (str base-url "/search") {:search text})
+                      (expect-tag :boardgames)
+                      :content
+                      (map (comp :objectid :attrs))
+                      (str/join ","))
+        ]
+    (->> (get-xml (str base-url "/boardgame/" game-ids) nil)
+         (expect-tag :boardgames)
+         :content
+         (map xml->board-game))))
