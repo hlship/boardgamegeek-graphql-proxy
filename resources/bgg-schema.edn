@@ -19,8 +19,9 @@
  :queries {
            :search {:type (list BoardGame)
                     :description "Searches for board games matching a search term."
-                    :args {:id {:type String
-                                :description "Search term used to locate Games"}}}
+                    :args {:term {:type String
+                                  :description "Search term used to locate Games"}}
+                    :resolve :resolve-search}
            :game {:type BoardGame
                   :description "Retrieve a single BoardGame by its unique id."
                   :args {:id {:type ID

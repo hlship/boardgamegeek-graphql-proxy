@@ -5,12 +5,7 @@
     [clojure.data.xml :as xml])
   (:import (java.io StringReader)))
 
-(def base-url "https://www.boardgamegeek.com/xmlapi")
-
-(require '[clojure.pprint :as pp])
-(defn tap [label x]
-  (println label (pp/write x :stream nil))
-  x)
+(def ^:private base-url "https://www.boardgamegeek.com/xmlapi")
 
 (defn ^:private expect-tag [tag element]
   (when-not (= tag (:tag element))
@@ -25,7 +20,7 @@
 (defn ^:private prefix-with-https [s] (str "https:" s))
 
 (def ^:private boardgame-content-renames
-  {:yearpublished [:year-published parse-int]
+  {:yearpublished [:publish-year parse-int]
    :minplayers [:min-players parse-int]
    :maxplayers [:max-players parse-int]
    :playingtime [:playing-time parse-int]
@@ -61,18 +56,29 @@
           {:id (-> element :attrs :objectid)}
           (:content element)))
 
-(defn get-board-game
-  [id]
-  (->> (client/get (str base-url "/boardgame/" id)
+(defn ^:private get-xml
+  [url query-params]
+  (->> (client/get url
                    {:accept "text/xml"
+                    :query-params query-params
                     :throw-exceptions false})
-       #_(tap :raw-response)
        :body
        StringReader.
-       xml/parse
-       #_ (tap :parsed-body)
+       xml/parse))
+
+(defn get-board-game
+  [id]
+  (->> (get-xml (str base-url "/boardgame/" id) nil)
        (expect-tag :boardgames)
        :content
        first
-       #_(tap :raw-board-game)
        xml->board-game))
+
+(defn search
+  "Performs a search of matching games by name."
+  [text]
+  (->> (get-xml (str base-url "/search") {:search text})
+       (expect-tag :boardgames)
+       :content
+       ;; This only yields :name and :year-published
+       (map xml->board-game)))

@@ -11,10 +11,15 @@
   ;; TODO: Error handling, including not found
   [(client/get-board-game (:id args)) nil])
 
+(defn ^:private resolve-search
+  [_ args _value]
+  [(client/search (:term args)) nil])
+
 (defn bgg-schema
   []
   (-> (io/resource "bgg-schema.edn")
       slurp
       edn/read-string
-      (attach-resolvers {:resolve-game resolve-board-game})
+      (attach-resolvers {:resolve-game resolve-board-game
+                         :resolve-search resolve-search})
       schema/compile))
