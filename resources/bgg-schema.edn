@@ -5,8 +5,10 @@
                                 :publish_year {:type Int}
                                 :min_players {:type Int}
                                 :max_players {:type Int}
-                                :playing_time {:type Int}
-                                :args {:type Int}
+                                :playing_time {:type Int
+                                               :description "Approximiate playing time, in minutes."}
+                                :min_player_age {:type Int
+                                                 :description "Minimum age, in years, for a player. A rough guide to complexity of the game."}
                                 :description {:type String
                                               :description "Short text description of the game."}
                                 :thumbnail {:type String
@@ -22,4 +24,5 @@
            :game {:type BoardGame
                   :description "Retrieve a single BoardGame by its unique id."
                   :args {:id {:type ID
-                              :description "Unique identifier for the game."}}}}}
+                              :description "Unique identifier for the game."}}
+                  :resolve :resolve-game}}}
