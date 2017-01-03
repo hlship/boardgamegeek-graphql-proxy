@@ -5,7 +5,7 @@
 
 (defn bgg-schema
   []
-  (-> (io/resource "bgg-schema")
+  (-> (io/resource "bgg-schema.edn")
       slurp
       edn/read-string
       identity                                              ; placeholder
