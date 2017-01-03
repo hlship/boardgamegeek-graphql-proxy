@@ -50,11 +50,15 @@
     (assoc bg :name (-> element :content first))
     bg))
 
+(defmethod process-bg-content :boardgamepublisher
+  [bg element]
+  (update bg :publisher-ids conj (-> element :attrs :objectid)))
 
 (defn ^:private xml->board-game
   [element]
   (reduce process-bg-content
-          {:id (-> element :attrs :objectid)}
+          {:id (-> element :attrs :objectid)
+           :publisher-ids []}
           (:content element)))
 
 (defn ^:private get-xml
@@ -88,3 +92,22 @@
          (expect-tag :boardgames)
          :content
          (map xml->board-game))))
+
+(defn ^:private xml->company
+  [id company-element]
+  (expect-tag :company company-element)
+  (-> (into {}
+            (map #(vector (:tag %)
+                          (-> % :content first))
+                 (:content company-element)))
+      (select-keys [:name :description])
+      (assoc :id (str id))))
+
+(defn publishers
+  [ids]
+  (->> (get-xml (str base-url "/boardgamepublisher/" (str/join "," ids)) nil)
+       (expect-tag :companies)
+       :content
+       ;; BGG doesn't return the company id in the XML, so we have to
+       ;; hope it all lines up. Demoware.
+       (map xml->company ids)))

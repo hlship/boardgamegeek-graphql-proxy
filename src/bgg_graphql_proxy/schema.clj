@@ -15,11 +15,16 @@
   [_ args _value]
   [(client/search (:term args)) nil])
 
+(defn ^:private resolve-game-publishers
+  [_ _ board-game]
+  [(-> board-game :publisher-ids client/publishers) nil])
+
 (defn bgg-schema
   []
   (-> (io/resource "bgg-schema.edn")
       slurp
       edn/read-string
       (attach-resolvers {:resolve-game resolve-board-game
-                         :resolve-search resolve-search})
+                         :resolve-search resolve-search
+                         :resolve-game-publishers resolve-game-publishers})
       schema/compile))

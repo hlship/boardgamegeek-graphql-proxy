@@ -1,4 +1,10 @@
 {:objects {
+           :Company {:description "A company that may publish a Board Game."
+                     :fields {:id {:type ID}
+                              :name {:type String}
+                              :description {:type String}}
+                     }
+
            :BoardGame {:description "Details about a Board Game including description, number of players, creators, and publishes."
                        :fields {:id {:type ID}
                                 :name {:type String}
@@ -14,7 +20,10 @@
                                 :thumbnail {:type String
                                             :description "URL for a small image representing the game, used in various lists."}
                                 :image {:type String
-                                        :description "URL for a larger image for the game."}}}}
+                                        :description "URL for a larger image for the game."}
+                                :publishers {:type (list Company)
+                                             :description "Company that has published the game."
+                                             :resolve :resolve-game-publishers}}}}
 
  :queries {
            :search {:type (list BoardGame)
