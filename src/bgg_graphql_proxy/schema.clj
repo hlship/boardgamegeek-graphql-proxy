@@ -16,8 +16,11 @@
   [(client/search (:term args)) nil])
 
 (defn ^:private resolve-game-publishers
-  [_ _ board-game]
-  [(-> board-game :publisher-ids client/publishers) nil])
+  [_ args board-game]
+  (let [{:keys [limit]} args
+        publisher-ids (cond->> (:publisher-ids board-game)
+                        limit (take limit))]
+    [(client/publishers publisher-ids) nil]))
 
 (defn bgg-schema
   []

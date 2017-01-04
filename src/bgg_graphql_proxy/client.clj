@@ -86,8 +86,7 @@
                       (expect-tag :boardgames)
                       :content
                       (map (comp :objectid :attrs))
-                      (str/join ","))
-        ]
+                      (str/join ","))]
     (->> (get-xml (str base-url "/boardgame/" game-ids) nil)
          (expect-tag :boardgames)
          :content

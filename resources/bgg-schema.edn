@@ -22,6 +22,9 @@
                                 :image {:type String
                                         :description "URL for a larger image for the game."}
                                 :publishers {:type (list Company)
+                                             :args {:limit {:type Int
+                                                            :description "Maximum number of results to include.
+                                                            Default is no limit."}}
                                              :description "Company that has published the game."
                                              :resolve :resolve-game-publishers}}}}
 
