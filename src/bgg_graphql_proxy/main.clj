@@ -1,6 +1,7 @@
 (ns bgg-graphql-proxy.main
   (:require
     [io.pedestal.http :as http]
+    [com.walmartlabs.graphql :refer [execute]]
     [bgg-graphql-proxy.schema :refer [bgg-schema]]
     [bgg-graphql-proxy.server :refer [pedestal-server]]))
 
