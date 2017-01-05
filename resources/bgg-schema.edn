@@ -2,8 +2,7 @@
            :Company {:description "A company that may publish a Board Game."
                      :fields {:id {:type ID}
                               :name {:type String}
-                              :description {:type String}}
-                     }
+                              :description {:type String}}}
 
            :BoardGame {:description "Details about a Board Game including description, number of players, creators, and publishes."
                        :fields {:id {:type ID}
@@ -32,7 +31,7 @@
            :search {:type (list BoardGame)
                     :description "Searches for board games matching a search term."
                     :args {:term {:type String
-                                  :description "Search term used to locate Games"}}
+                                  :description "Search term used to locate Games."}}
                     :resolve :resolve-search}
            :game {:type BoardGame
                   :description "Retrieve a single BoardGame by its unique id."
