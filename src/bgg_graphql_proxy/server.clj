@@ -5,17 +5,14 @@
     [io.pedestal.interceptor :refer [interceptor]]
     [clojure.java.io :as io]
     [clojure.data.json :as json]
-    [com.walmartlabs.graphql :refer [execute]]))
+    [com.walmartlabs.graphql :refer [execute]]
+    [ring.util.response :as response]))
 
 
 (defn ^:private index-handler
   "Handles the index request as if it were /graphiql/index.html."
   [request]
-  {:status 200
-   :headers {"Content-Type" "text/html;charset-UTF-8"}
-   :body (-> "graphiql/index.html"
-             io/resource
-             slurp)})
+  (response/redirect "/index.html"))
 
 (defn variable-map
   "Reads the `variables` query parameter, which contains a JSON string
@@ -35,7 +32,7 @@
     :else ""))
 
 (defn ^:private graphql-handler
-  "Accepts a GraphQL query via POST, and executes the query.
+  "Accepts a GraphQL query via GET or POST, and executes the query.
   Returns the result as text/json."
   [compiled-schema]
   (fn [request]

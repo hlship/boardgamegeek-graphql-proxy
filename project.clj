@@ -3,7 +3,6 @@
   :dependencies [[org.clojure/clojure "1.9.0-alpha14"]
                  [io.aviso/logging "0.1.0"]
                  [com.walmartlabs/graphql "0.12.0"]
-                 [com.walmartlabs/graphiql "0.1.0"]
                  [clj-http "2.3.0"]
                  [org.clojure/data.json "0.2.6"]
                  [org.clojure/data.xml "0.0.8"]
