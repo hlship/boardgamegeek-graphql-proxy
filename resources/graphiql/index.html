@@ -70,18 +70,21 @@
         updateURL();
       }
 
-      function updateURL() {
-        var newSearch = '?' + Object.keys(parameters).map(function (key) {
+      function computeParams() {
+        return '?' + Object.keys(parameters).map(function (key) {
           return encodeURIComponent(key) + '=' +
             encodeURIComponent(parameters[key]);
         }).join('&');
-        history.replaceState(null, null, newSearch);
+      }
+
+      function updateURL() {
+        history.replaceState(null, null, computeParams());
       }
 
       // Defines a GraphQL fetcher using the fetch API.
       function graphQLFetcher(graphQLParams) {
         console.log(graphQLParams);
-        return fetch(window.location.origin + '/graphql', {
+        return fetch(window.location.origin + '/graphql' + computeParams(), {
           method: 'post',
           headers: {
             'Content-Type': 'application/graphql',
