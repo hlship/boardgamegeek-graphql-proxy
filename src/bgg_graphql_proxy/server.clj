@@ -6,7 +6,8 @@
     [clojure.java.io :as io]
     [clojure.data.json :as json]
     [com.walmartlabs.graphql :refer [execute]]
-    [ring.util.response :as response]))
+    [ring.util.response :as response]
+    [clojure.string :as str]))
 
 
 (defn ^:private index-handler
@@ -20,9 +21,10 @@
 
   Returns a map of the variables (using keyword keys)."
   [request]
-  (if-let [vars (get-in request [:query-params :variables])]
-    (json/read-str vars :key-fn keyword)
-    {}))
+  (let [vars (get-in request [:query-params :variables])]
+    (if-not (str/blank? vars)
+      (json/read-str vars :key-fn keyword)
+      {})))
 
 (defn extract-query
   [request]
