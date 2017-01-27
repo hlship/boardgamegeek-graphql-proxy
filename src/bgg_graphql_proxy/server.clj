@@ -5,7 +5,7 @@
     [io.pedestal.interceptor :refer [interceptor]]
     [clojure.java.io :as io]
     [clojure.data.json :as json]
-    [com.walmartlabs.graphql :refer [execute]]
+    [com.walmartlabs.lacinia :refer [execute]]
     [ring.util.response :as response]
     [clojure.string :as str]))
 

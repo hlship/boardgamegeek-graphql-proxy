@@ -2,8 +2,8 @@
   (:require
     [clojure.java.io :as io]
     [clojure.edn :as edn]
-    [com.walmartlabs.graphql.schema :as schema]
-    [com.walmartlabs.graphql.util :refer [attach-resolvers]]
+    [com.walmartlabs.lacinia.schema :as schema]
+    [com.walmartlabs.lacinia.util :refer [attach-resolvers]]
     [bgg-graphql-proxy.client :as client]))
 
 (defn ^:private resolve-board-game
