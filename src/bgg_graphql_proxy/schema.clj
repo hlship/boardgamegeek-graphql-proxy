@@ -15,12 +15,18 @@
   [_ args _value]
   [(client/search (:term args)) nil])
 
+(defn ^:private extract-ids [board-game key args]
+  (let [{:keys [limit]} args]
+    (cond->> (get board-game key)
+      limit (take limit))))
+
 (defn ^:private resolve-game-publishers
   [_ args board-game]
-  (let [{:keys [limit]} args
-        publisher-ids (cond->> (:publisher-ids board-game)
-                        limit (take limit))]
-    [(client/publishers publisher-ids) nil]))
+  [(client/publishers (extract-ids board-game :publisher-ids args)) nil])
+
+(defn ^:private resolve-game-designers
+  [_ args board-game]
+  [(client/designers (extract-ids board-game :designer-ids args)) nil])
 
 (defn bgg-schema
   []
@@ -29,5 +35,6 @@
       edn/read-string
       (attach-resolvers {:resolve-game resolve-board-game
                          :resolve-search resolve-search
-                         :resolve-game-publishers resolve-game-publishers})
+                         :resolve-game-publishers resolve-game-publishers
+                         :resolve-game-designers resolve-game-designers})
       schema/compile))

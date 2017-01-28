@@ -1,12 +1,26 @@
-{:objects {
+{:interfaces {
+              :BGGEntity {:description "A Standard BGG entity with id, name, and optional description."
+                          :fields {:id {:type (non-null ID)}
+                                   :name {:type (non-null String)}
+                                   :description {:type String}}}}
+ :objects {
            :Company {:description "A company that may publish a Board Game."
-                     :fields {:id {:type ID}
-                              :name {:type String}
+                     :implements [:BGGEntity]
+                     :fields {:id {:type (non-null ID)}
+                              :name {:type (non-null String)}
                               :description {:type String}}}
 
+           :Designer {:description "Person who designs a game."
+                      :implements [:BGGEntity]
+                      :fields {:id {:type (non-null ID)}
+                               :name {:type (non-null String)}
+                               :description {:type String}}}
+
            :BoardGame {:description "Details about a Board Game including description, number of players, creators, and publishes."
-                       :fields {:id {:type ID}
-                                :name {:type String}
+                       :implements [:BGGEntity]
+                       :fields {:id {:type (non-null ID)}
+                                :name {:type (non-null String)
+                                       :description "Common name or title for the game."}
                                 :publish_year {:type Int}
                                 :min_players {:type Int}
                                 :max_players {:type Int}
@@ -25,7 +39,12 @@
                                                             :description "Maximum number of results to include.
                                                             Default is no limit."}}
                                              :description "Company that has published the game."
-                                             :resolve :resolve-game-publishers}}}}
+                                             :resolve :resolve-game-publishers}
+                                :designers {:type (list Designer)
+                                            :args {:limit {:type Int
+                                                           :description "Maximum number of results to include. Default is no limit."}}
+                                            :description "Person who contributed to the design of the game."
+                                            :resolve :resolve-game-designers}}}}
 
  :queries {
            :search {:type (list BoardGame)

@@ -3,14 +3,17 @@
   (:require
     [clj-http.client :as client]
     [clojure.data.xml :as xml]
-    [clojure.string :as str])
+    [clojure.string :as str]
+    [clojure.tools.logging :as log])
   (:import (java.io StringReader)))
 
 (def ^:private base-url "https://www.boardgamegeek.com/xmlapi")
 
 (defn ^:private expect-tag [tag element]
   (when-not (= tag (:tag element))
-    (throw (ex-info "Wrong tag."
+    (throw (ex-info (format "Wrong tag.  Expected `%s', not `%s'."
+                            (name tag)
+                            (-> element :tag name))
                     {:expected-tag tag
                      :actual-tag (:tag element)
                      :element element})))
@@ -54,6 +57,10 @@
   [bg element]
   (update bg :publisher-ids conj (-> element :attrs :objectid)))
 
+(defmethod process-bg-content :boardgamedesigner
+  [bg element]
+  (update bg :designer-ids conj (-> element :attrs :objectid)))
+
 (defn ^:private xml->board-game
   [element]
   (reduce process-bg-content
@@ -63,6 +70,8 @@
 
 (defn ^:private get-xml
   [url query-params]
+  (log/info (str "BGG Query: " url (when query-params
+                                     (str " " (pr-str query-params)))))
   (->> (client/get url
                    {:accept "text/xml"
                     :query-params query-params
@@ -92,21 +101,42 @@
          :content
          (map xml->board-game))))
 
+(defn ^:private xml->map
+  [element keys]
+  (-> (into {}
+            (map #(vector (:tag %)
+                          ;; Assumes :content is a single element, a string containing the value.
+                          (-> % :content first)))
+            (:content element))
+      (select-keys keys)))
+
 (defn ^:private xml->company
   [id company-element]
   (expect-tag :company company-element)
-  (-> (into {}
-            (map #(vector (:tag %)
-                          (-> % :content first))
-                 (:content company-element)))
-      (select-keys [:name :description])
+  (-> company-element
+      (xml->map [:name :description])
+      (assoc :id (str id))))
+
+(defn ^:private xml->person
+  [id person-element]
+  (expect-tag :person person-element)
+  (-> person-element
+      (xml->map [:name :description])
       (assoc :id (str id))))
 
 (defn publishers
   [ids]
+  (prn `publishers ids)
   (->> (get-xml (str base-url "/boardgamepublisher/" (str/join "," ids)) nil)
        (expect-tag :companies)
        :content
        ;; BGG doesn't return the company id in the XML, so we have to
        ;; hope it all lines up. Demoware.
        (map xml->company ids)))
+
+(defn designers
+  [ids]
+  (->> (get-xml (str base-url "/boardgamedesigner/" (str/join "," ids)) nil)
+       (expect-tag :people)
+       :content
+       (map xml->person ids)))
