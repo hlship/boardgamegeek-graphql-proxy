@@ -7,13 +7,13 @@
     [bgg-graphql-proxy.client :as client]))
 
 (defn ^:private resolve-board-game
-  [_ args _value]
+  [context args _value]
   ;; TODO: Error handling, including not found
-  [(client/get-board-game (:id args)) nil])
+  [(client/get-board-game (:cache context) (:id args)) nil])
 
 (defn ^:private resolve-search
-  [_ args _value]
-  [(client/search (:term args)) nil])
+  [context args _value]
+  [(client/search (:cache context) (:term args)) nil])
 
 (defn ^:private extract-ids [board-game key args]
   (let [{:keys [limit]} args]
@@ -21,12 +21,12 @@
       limit (take limit))))
 
 (defn ^:private resolve-game-publishers
-  [_ args board-game]
-  [(client/publishers (extract-ids board-game :publisher-ids args)) nil])
+  [context args board-game]
+  [(client/publishers (:cache context) (extract-ids board-game :publisher-ids args)) nil])
 
 (defn ^:private resolve-game-designers
-  [_ args board-game]
-  [(client/designers (extract-ids board-game :designer-ids args)) nil])
+  [context args board-game]
+  [(client/designers (:cache context) (extract-ids board-game :designer-ids args)) nil])
 
 (defn bgg-schema
   []

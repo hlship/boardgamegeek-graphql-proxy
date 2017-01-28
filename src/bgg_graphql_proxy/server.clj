@@ -37,16 +37,17 @@
   "Accepts a GraphQL query via GET or POST, and executes the query.
   Returns the result as text/json."
   [compiled-schema]
-  (fn [request]
-    (let [vars (variable-map request)
-          query (extract-query request)
-          result (execute compiled-schema query vars nil)
-          status (if (-> result :errors seq)
-                   400
-                   200)]
-      {:status status
-       :headers {"Content-Type" "application/json"}
-       :body (json/write-str result)})))
+  (let [context {:cache (atom {})}]
+    (fn [request]
+      (let [vars (variable-map request)
+            query (extract-query request)
+            result (execute compiled-schema query vars context)
+            status (if (-> result :errors seq)
+                     400
+                     200)]
+        {:status status
+         :headers {"Content-Type" "application/json"}
+         :body (json/write-str result)}))))
 
 (defn ^:private routes
   [compiled-schema]

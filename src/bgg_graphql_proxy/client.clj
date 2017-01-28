@@ -1,6 +1,7 @@
 (ns bgg-graphql-proxy.client
   "Client code for accessing BoardGameGeek, and converting XML responses into Clojure data."
   (:require
+    [bgg-graphql-proxy.cache :as cache]
     [clj-http.client :as client]
     [clojure.data.xml :as xml]
     [clojure.string :as str]
@@ -81,25 +82,31 @@
        xml/parse))
 
 (defn get-board-game
-  [id]
-  (->> (get-xml (str base-url "/boardgame/" id) nil)
-       (expect-tag :boardgames)
-       :content
-       first
-       xml->board-game))
+  [cache id]
+  (or (cache/resolve-by-id cache :games id)
+      (let [game (->> (get-xml (str base-url "/boardgame/" id) nil)
+                      (expect-tag :boardgames)
+                      :content
+                      first
+                      xml->board-game)]
+        (cache/fill cache :games [game])
+        game)))
 
 (defn search
   "Performs a search of matching games by name."
-  [text]
+  [cache text]
   (let [game-ids (->> (get-xml (str base-url "/search") {:search text})
                       (expect-tag :boardgames)
                       :content
-                      (map (comp :objectid :attrs))
-                      (str/join ","))]
-    (->> (get-xml (str base-url "/boardgame/" game-ids) nil)
-         (expect-tag :boardgames)
-         :content
-         (map xml->board-game))))
+                      (map (comp :objectid :attrs)))
+        [cached more-ids] (cache/resolve-by-ids cache :games game-ids)
+        games (when more-ids
+                (->> (get-xml (str base-url "/boardgame/" (str/join "," more-ids)) nil)
+                     (expect-tag :boardgames)
+                     :content
+                     (map xml->board-game)))]
+    (cache/fill cache :games games)
+    (concat cached games)))
 
 (defn ^:private xml->map
   [element keys]
@@ -125,18 +132,25 @@
       (assoc :id (str id))))
 
 (defn publishers
-  [ids]
-  (prn `publishers ids)
-  (->> (get-xml (str base-url "/boardgamepublisher/" (str/join "," ids)) nil)
-       (expect-tag :companies)
-       :content
-       ;; BGG doesn't return the company id in the XML, so we have to
-       ;; hope it all lines up. Demoware.
-       (map xml->company ids)))
+  [cache ids]
+  (let [[cached more-ids] (cache/resolve-by-ids cache :publishers ids)
+        publishers (when more-ids
+                     (->> (get-xml (str base-url "/boardgamepublisher/" (str/join "," more-ids)) nil)
+                          (expect-tag :companies)
+                          :content
+                          ;; BGG doesn't return the company id in the XML, so we have to
+                          ;; hope it all lines up. Demoware.
+                          (map xml->company more-ids)))]
+    (cache/fill cache :publishers publishers)
+    (concat cached publishers)))
 
 (defn designers
-  [ids]
-  (->> (get-xml (str base-url "/boardgamedesigner/" (str/join "," ids)) nil)
-       (expect-tag :people)
-       :content
-       (map xml->person ids)))
+  [cache ids]
+  (let [[cached more-ids] (cache/resolve-by-ids cache :designers ids)
+        designers (when more-ids
+                    (->> (get-xml (str base-url "/boardgamedesigner/" (str/join "," more-ids)) nil)
+                         (expect-tag :people)
+                         :content
+                         (map xml->person more-ids)))]
+    (cache/fill cache :designers designers)
+    (concat cached designers)))
