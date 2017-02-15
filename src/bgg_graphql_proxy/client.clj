@@ -66,7 +66,8 @@
   [element]
   (reduce process-bg-content
           {:id (-> element :attrs :objectid)
-           :publisher-ids []}
+           :publisher-ids []
+           :designer-ids []}
           (:content element)))
 
 (defn ^:private get-xml
