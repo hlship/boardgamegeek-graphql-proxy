@@ -9,24 +9,25 @@
 (defn ^:private resolve-board-game
   [context args _value]
   ;; TODO: Error handling, including not found
-  [(client/get-board-game (:cache context) (:id args)) nil])
+  (client/get-board-game (:cache context) (:id args)))
 
 (defn ^:private resolve-search
   [context args _value]
-  [(client/search (:cache context) (:term args)) nil])
+  (client/search (:cache context) (:term args)))
 
-(defn ^:private extract-ids [board-game key args]
+(defn ^:private extract-ids
+  [board-game key args]
   (let [{:keys [limit]} args]
     (cond->> (get board-game key)
       limit (take limit))))
 
 (defn ^:private resolve-game-publishers
   [context args board-game]
-  [(client/publishers (:cache context) (extract-ids board-game :publisher-ids args)) nil])
+  (client/publishers (:cache context) (extract-ids board-game :publisher-ids args)))
 
 (defn ^:private resolve-game-designers
   [context args board-game]
-  [(client/designers (:cache context) (extract-ids board-game :designer-ids args)) nil])
+  (client/designers (:cache context) (extract-ids board-game :designer-ids args)))
 
 (defn bgg-schema
   []

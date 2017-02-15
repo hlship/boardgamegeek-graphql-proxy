@@ -2,7 +2,7 @@
   :description "GraphQL interface to BoardGameGeek"
   :dependencies [[org.clojure/clojure "1.9.0-alpha14"]
                  [io.aviso/logging "0.2.0"]
-                 [com.walmartlabs/lacinia "v0"]
+                 [com.walmartlabs/lacinia "NEXT"]
                  [clj-http "2.3.0"]
                  [org.clojure/data.json "0.2.6"]
                  [org.clojure/data.xml "0.0.8"]
