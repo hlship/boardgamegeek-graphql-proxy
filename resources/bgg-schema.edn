@@ -16,7 +16,7 @@
                                :name {:type (non-null :String)}
                                :description {:type :String}}}
 
-           :BoardGame {:description "Details about a Board Game including description, number of players, creators, and publishes."
+           :BoardGame {:description "Details about a Board Game including description, number of players, creators, and publishers."
                        :implements [:BGGEntity]
                        :fields {:id {:type (non-null :ID)}
                                 :name {:type (non-null :String)
