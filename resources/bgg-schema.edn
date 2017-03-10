@@ -1,32 +1,32 @@
 {:interfaces {
               :BGGEntity {:description "A Standard BGG entity with id, name, and optional description."
-                          :fields {:id {:type (non-null :ID)}
-                                   :name {:type (non-null :String)}
-                                   :description {:type :String}}}}
+                          :fields {:id {:type (non-null ID)}
+                                   :name {:type (non-null String)}
+                                   :description {:type String}}}}
  :objects {
            :Company {:description "A company that may publish a Board Game."
                      :implements [:BGGEntity]
-                     :fields {:id {:type (non-null :ID)}
-                              :name {:type (non-null :String)}
-                              :description {:type :String}}}
+                     :fields {:id {:type (non-null ID)}
+                              :name {:type (non-null String)}
+                              :description {:type String}}}
 
            :Designer {:description "Person who designs a game."
                       :implements [:BGGEntity]
-                      :fields {:id {:type (non-null :ID)}
-                               :name {:type (non-null :String)}
-                               :description {:type :String}}}
+                      :fields {:id {:type (non-null ID)}
+                               :name {:type (non-null String)}
+                               :description {:type String}}}
 
            :BoardGame {:description "Details about a Board Game including description, number of players, creators, and publishers."
                        :implements [:BGGEntity]
-                       :fields {:id {:type (non-null :ID)}
-                                :name {:type (non-null :String)
+                       :fields {:id {:type (non-null ID)}
+                                :name {:type (non-null String)
                                        :description "Common name or title for the game."}
-                                :publish_year {:type :Int}
-                                :min_players {:type :Int}
-                                :max_players {:type :Int}
-                                :playing_time {:type :Int
+                                :publish_year {:type Int}
+                                :min_players {:type Int}
+                                :max_players {:type Int}
+                                :playing_time {:type Int
                                                :description "Approximiate playing time, in minutes."}
-                                :min_player_age {:type :Int
+                                :min_player_age {:type Int
                                                  :description "Minimum age, in years, for a player. A rough guide to complexity of the game."}
                                 :description {:type String
                                               :description "Short text description of the game."}
@@ -35,13 +35,13 @@
                                 :image {:type String
                                         :description "URL for a larger image for the game."}
                                 :publishers {:type (list :Company)
-                                             :args {:limit {:type :Int
+                                             :args {:limit {:type Int
                                                             :description "Maximum number of results to include.
                                                             Default is no limit."}}
                                              :description "Company that has published the game."
                                              :resolve :resolve-game-publishers}
                                 :designers {:type (list :Designer)
-                                            :args {:limit {:type :Int
+                                            :args {:limit {:type Int
                                                            :description "Maximum number of results to include. Default is no limit."}}
                                             :description "Person who contributed to the design of the game."
                                             :resolve :resolve-game-designers}}}}
@@ -49,11 +49,11 @@
  :queries {
            :search {:type (list :BoardGame)
                     :description "Searches for board games matching a search term."
-                    :args {:term {:type :String
+                    :args {:term {:type (not-null String)
                                   :description "Search term used to locate Games."}}
                     :resolve :resolve-search}
            :game {:type :BoardGame
                   :description "Retrieve a single BoardGame by its unique id."
-                  :args {:id {:type :ID
+                  :args {:id {:type (not-null ID)
                               :description "Unique identifier for the game."}}
                   :resolve :resolve-game}}}
