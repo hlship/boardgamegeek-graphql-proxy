@@ -31,7 +31,7 @@
   (case (:request-method request)
     :get (get-in request [:query-params :query])
     :post (slurp (:body request))
-    :else ""))
+    ""))
 
 (defn ^:private graphql-handler
   "Accepts a GraphQL query via GET or POST, and executes the query.
