@@ -16,3 +16,8 @@
   (-> (bgg-schema)
       pedestal-server
       http/start))
+
+(defn -main
+  "The entry-point for 'lein run'"
+  [& args]
+  (start-server))

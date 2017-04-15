@@ -9,4 +9,5 @@
                  [io.pedestal/pedestal.service "0.5.2"]
                  [io.pedestal/pedestal.jetty "0.5.2"]]
   :codox {:source-uri "https://github.com/hlship/boardgamegeek-graphql-proxy/blob/master/{filepath}#L{line}"
-          :metadata {:doc/format :markdown}})
+          :metadata {:doc/format :markdown}}
+  :main bgg-graphql-proxy.main)
